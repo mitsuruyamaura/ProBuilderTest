@@ -1,16 +1,15 @@
-using System;
 using UnityEngine;
 using UnityEngine.Pool;
 
 public class BulletPool : MonoBehaviour
 {
-    private IObjectPool<Bullet> _bulletPool;
+    private PoolBase<Bullet> _bulletPool;
 
     [SerializeField] private Bullet bulletPrefab;
 
 
     private void Awake() {
-        _bulletPool = new ObjectPool<Bullet>
+        _bulletPool = new PoolBase<Bullet>
             (
                 createFunc: CreateBullet,
                 actionOnGet: bullet => bullet.gameObject.SetActive(true),
@@ -30,17 +29,19 @@ public class BulletPool : MonoBehaviour
     }
 
     public Bullet GetBullet() {
-        
+
         // 通常の方法
         //Bullet bullet = _bulletPool.Get();
         //bullet.BulletPool = this;
 
         //out修飾子でbulletを取り出し、返り値をIDisposableとして取得する
-        IDisposable disposable = _bulletPool.Get(out var bullet);
+        //IDisposable disposable = _bulletPool.Get(out var bullet);
+
+        (PooledObjClass<Bullet> pooledObject, Bullet bullet) = _bulletPool.Get();
 
         // 取得したbulletのインスタンスに、プールへの返却機能を渡す
         // 利点は Bullet 側には IDisposable のみ用意すればよいこと(仮に Objectpool の型が変わっても影響がない)
-        bullet.SetReturner(disposable);
+        bullet.SetReturner(pooledObject);
 
         // 呼び出し側にBulletのインスタンスを返す
         return bullet;
