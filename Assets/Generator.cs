@@ -12,7 +12,7 @@ public class Generator : MonoBehaviour
 
     void Update()
     {
-        if (generateCount <= maxGenerateCount) {
+        if (generateCount >= maxGenerateCount) {
             return;
         } 
 
